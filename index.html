@@ -8,6 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Comic+Neue :wght@700&display=swap" rel="stylesheet">
     <style>
         body {
+            background-image: url(assets/images/bg3.jpg);
+            background-size: cover;
             background-color: #f0f4f8;
             font-family: 'Comic Neue', cursive;
         }
@@ -133,16 +135,15 @@
                 </div>
             </div>
         </div>
-
         <div id="Home" class="character-selection text-center">
             <h2 class="mb-4">Choose Your One Piece Characters!</h2>
             <div class="row">
                 <div id="x" class="col-md-5">
                     <div>
                         <h4 class="text-primary player-name-display" id="playerXNameDisplay"></h4>
-                        <img class="character-img" src="pzoro.jpg" onclick="char(1, 'x')">
-                        <img class="character-img" src="pluffy.jpg" onclick="char(2, 'x')">
-                        <img class="character-img" src="Sanji.jpg" onclick="char(3, 'x')">
+                        <img class="character-img" src="assets/images/pzoro.jpg" onclick="char(1, 'x')">
+                        <img class="character-img" src="assets/images/pluffy.jpg" onclick="char(2, 'x')">
+                        <img class="character-img" src="assets/images/Sanji.jpg" onclick="char(3, 'x')">
                     </div>
                 </div>
                 <div class="col-md-2 d-flex justify-content-center align-items-center">
@@ -151,14 +152,13 @@
                 <div id="y" class="col-md-5">
                     <div>
                         <h4 class="text-danger player-name-display" id="playerONameDisplay"></h4>
-                        <img class="character-img" src="pzoro.jpg" onclick="char(1, 'y')">
-                        <img class="character-img" src="pluffy.jpg" onclick="char(2, 'y')">
-                        <img class="character-img" src="Sanji.jpg" onclick="char(3, 'y')">
+                        <img class="character-img" src="assets/images/pzoro.jpg" onclick="char(1, 'y')">
+                        <img class="character-img" src="assets/images/pluffy.jpg" onclick="char(2, 'y')">
+                        <img class="character-img" src="assets/images/Sanji.jpg" onclick="char(3, 'y')">
                     </div>
                 </div>
             </div>
         </div>
-
         <div id="Board" class="tic-tac-toe-board">
             <div class="row">
                 <div class="col-md-3 text-center">
@@ -187,6 +187,7 @@
                         </tr>
                     </table>
                     <div class="text-center mt-3">
+                        <button onclick="toggleMute()" class="btn btn-secondary">🔊 Mute/Unmute</button>
                         <button onclick="reset()" class="btn btn-reset">Reset Game</button>
                     </div>
                 </div>
@@ -196,12 +197,11 @@
                 </div>
             </div>
         </div>
-
         <div class="modal fade" id="exampleModalToggle" aria-labelledby="exampleModalToggleLabel" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-body text-center">
-                        <img src="win.gif" class="img-fluid" alt="Winner Animation">
+                        <img src="assets/images/winner.gif" class="img-fluid" alt="Winner Animation">
                         <div id="winner" class="fs-4 mt-3">
                             THE WINNER IS [X/O]!
                         </div>
@@ -213,7 +213,6 @@
             </div>
         </div>
     </div>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/js/bootstrap.bundle.min.js "></script>
     <script>
         // Game state variables
@@ -222,14 +221,28 @@
         let playerXName = '';
         let playerOName = '';
         let player = 0;
-        const player_name = ['X', 'O'];
         let draw = 0;
         const boxes = ['', '', '', '', '', '', '', '', ''];
         const characters = {
-            1: { profile: 'pzoro.jpg', fullBody: 'czoro.jpg' },
-            2: { profile: 'pluffy.jpg', fullBody: 'cluffy.jpg' },
-            3: { profile: 'Sanji.jpg', fullBody: 'csanji.jpg' }
+            1: { 
+                profile: 'assets/images/pzoro.jpg', 
+                fullBody: 'assets/images/czoro.jpg',
+                sound: 'assets/sound/zoro.mp3'
+            },
+            2: { 
+                profile: 'assets/images/pluffy.jpg', 
+                fullBody: 'assets/images/cluffy.jpg',
+                sound: 'assets/sound/luffy.mp3'
+            },
+            3: { 
+                profile: 'assets/images/Sanji.jpg', 
+                fullBody: 'assets/images/csanji.jpg',
+                sound: 'assets/sound/sanji.mp3'
+            }
         };
+        const bgm = new Audio('assets/sound/backsound.mp3');
+        bgm.loop = true;
+        bgm.volume = 0.3;
 
         function proceedToCharacterSelection() {
             playerXName = document.getElementById('playerXName').value.trim();
@@ -244,23 +257,32 @@
             document.getElementById('playerOBoardName').textContent = playerOName;
             document.getElementById('PlayerNames').style.display = 'none';
             document.getElementById('Home').style.display = 'block';
+            bgm.play().catch(e => console.error("Gagal memainkan backsound:", e));
         }
 
-        function char(cnum, player) {
-            document.querySelectorAll(`#${player} img`).forEach(img => img.classList.remove('character-selected'));
-            const characterImg = document.querySelector(`#${player} img[src="${characters[cnum].profile}"]`);
+        function toggleMute() {
+            bgm.muted = !bgm.muted;
+            const btn = document.querySelector('.btn-secondary');
+            btn.textContent = bgm.muted ? '🔇 Unmute' : '🔊 Mute';
+        }
+
+        function char(cnum, playerType) {
+            document.querySelectorAll(`#${playerType} img`).forEach(img => img.classList.remove('character-selected'));
+            const characterImg = document.querySelector(`#${playerType} img[src="${characters[cnum].profile}"]`);
             characterImg.classList.add('character-selected');
-            if (player === 'x') {
+            if (playerType === 'x') {
                 playerXCharacter = characters[cnum];
                 document.getElementById('playerXCharacterProfile').src = playerXCharacter.fullBody;
             } else {
                 playerOCharacter = characters[cnum];
                 document.getElementById('playerOCharacterProfile').src = playerOCharacter.fullBody;
             }
+            const audio = new Audio(characters[cnum].sound);
+            audio.play().catch(e => console.error("Gagal memainkan suara:", e));
             if (playerXCharacter && playerOCharacter) {
                 document.getElementById('Home').style.display = 'none';
                 document.getElementById('Board').style.display = 'block';
-                document.getElementById('player').textContent = player_name[player];
+                document.getElementById('player').textContent = (player === 0 ? playerXName : playerOName);
             }
         }
 
@@ -270,7 +292,6 @@
                 alert("Already filled");
                 return;
             }
-
             const img = document.createElement('img');
             if (player === 0) {
                 img.src = playerXCharacter.profile;
@@ -303,14 +324,14 @@
                 }
             }
 
-        if (draw === 9) {
-            const winnerModal = document.getElementById('winner');
-            winnerModal.textContent = `${playerXName} and ${playerOName} TIED!`;
-            const modal = new bootstrap.Modal(document.getElementById('exampleModalToggle'));
-            modal.show();
-        } else {
+            if (draw === 9) {
+                const winnerModal = document.getElementById('winner');
+                winnerModal.textContent = `${playerXName} and ${playerOName} TIED!`;
+                const modal = new bootstrap.Modal(document.getElementById('exampleModalToggle'));
+                modal.show();
+            } else {
                 player = (player + 1) % 2;
-                document.getElementById('player').textContent = player_name[player];
+                document.getElementById('player').textContent = (player === 0 ? playerXName : playerOName);
             }
         }
 
@@ -324,7 +345,7 @@
             }
             player = 0;
             draw = 0;
-            document.getElementById('player').textContent = player_name[player];
+            document.getElementById('player').textContent = playerXName;
         }
 
         function restartGame() {
@@ -338,6 +359,9 @@
             document.querySelectorAll('#x img, #y img').forEach(img => img.classList.remove('character-selected'));
             document.getElementById('Board').style.display = 'none';
             document.getElementById('Home').style.display = 'block';
+            if (bgm.paused && !bgm.ended) {
+                bgm.play().catch(e => console.error("Gagal melanjutkan backsound:", e));
+            }
         }
     </script>
 </body>
