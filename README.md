@@ -27,7 +27,7 @@ Dibuat dengan **HTML**, **CSS (Bootstrap)**, dan **JavaScript** murni tanpa fram
 ## One Piece Version 
 ![Demo One Piece Tic Tac Toe](/assets/images/demo1.png )
 ## Anomaly Version   
-![Demo One Piece Tic Tac Toe](/assets/images/demo3.png )  
+![Demo Anomaly Tic Tac Toe](/assets/images/demo3.png )  
 
 ---
 
