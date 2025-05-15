@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>One Piece Tic Tac Toe</title>
+    <title>Anomaly Tic Tac Toe</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/css/bootstrap.min.css ">
     <link href="https://fonts.googleapis.com/css2?family=Comic+Neue :wght@700&display=swap" rel="stylesheet">
     <style>
         body {
-            background-image: url(assets/images/bg3.jpg);
-            background-size: cover;
+            background-image: url(assets/images/bg.png);
             background-color: #f0f4f8;
             font-family: 'Comic Neue', cursive;
         }
@@ -136,14 +135,14 @@
             </div>
         </div>
         <div id="Home" class="character-selection text-center">
-            <h2 class="mb-4">Choose Your One Piece Characters!</h2>
+            <h2 class="mb-4">Choose Your Anomaly Characters!</h2>
             <div class="row">
                 <div id="x" class="col-md-5">
                     <div>
                         <h4 class="text-primary player-name-display" id="playerXNameDisplay"></h4>
-                        <img class="character-img" src="assets/images/pzoro.jpg" onclick="char(1, 'x')">
-                        <img class="character-img" src="assets/images/pluffy.jpg" onclick="char(2, 'x')">
-                        <img class="character-img" src="assets/images/Sanji.jpg" onclick="char(3, 'x')">
+                        <img class="character-img" src="assets/images/bombardiro.webp" onclick="char(1, 'x')">
+                        <img class="character-img" src="assets/images/tralalero.avif" onclick="char(2, 'x')">
+                        <img class="character-img" src="assets/images/tungtungsahur.webp" onclick="char(3, 'x')">
                     </div>
                 </div>
                 <div class="col-md-2 d-flex justify-content-center align-items-center">
@@ -152,9 +151,9 @@
                 <div id="y" class="col-md-5">
                     <div>
                         <h4 class="text-danger player-name-display" id="playerONameDisplay"></h4>
-                        <img class="character-img" src="assets/images/pzoro.jpg" onclick="char(1, 'y')">
-                        <img class="character-img" src="assets/images/pluffy.jpg" onclick="char(2, 'y')">
-                        <img class="character-img" src="assets/images/Sanji.jpg" onclick="char(3, 'y')">
+                        <img class="character-img" src="assets/images/bombardiro.webp" onclick="char(1, 'y')">
+                        <img class="character-img" src="assets/images/tralalero.avif" onclick="char(2, 'y')">
+                        <img class="character-img" src="assets/images/tungtungsahur.webp" onclick="char(3, 'y')">
                     </div>
                 </div>
             </div>
@@ -201,7 +200,7 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-body text-center">
-                        <img src="assets/images/winner.gif" class="img-fluid" alt="Winner Animation">
+                        <img id="winnerCharacterImage" class="img-fluid" alt="Winner Character GIF">
                         <div id="winner" class="fs-4 mt-3">
                             THE WINNER IS [X/O]!
                         </div>
@@ -215,31 +214,35 @@
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/js/bootstrap.bundle.min.js "></script>
     <script>
-        // Game state variables
-        let playerXCharacter = '';
-        let playerOCharacter = '';
+        // Variabel global
+        let playerXCharacter = null;
+        let playerOCharacter = null;
         let playerXName = '';
         let playerOName = '';
         let player = 0;
         let draw = 0;
         const boxes = ['', '', '', '', '', '', '', '', ''];
+        let charAudioX = null;
+        let charAudioY = null;
+
         const characters = {
-            1: { 
-                profile: 'assets/images/pzoro.jpg', 
-                fullBody: 'assets/images/czoro.jpg',
-                sound: 'assets/sound/zoro.mp3'
+            1: {
+                profile: 'assets/images/bombardiro.webp',
+                fullBody: 'assets/images/bombardiro.gif',
+                sound: 'assets/sound/bombardiro.mp3'
             },
-            2: { 
-                profile: 'assets/images/pluffy.jpg', 
-                fullBody: 'assets/images/cluffy.jpg',
-                sound: 'assets/sound/luffy.mp3'
+            2: {
+                profile: 'assets/images/tralalero.avif',
+                fullBody: 'assets/images/tralalero.webp',
+                sound: 'assets/sound/tralalero.mp3'
             },
-            3: { 
-                profile: 'assets/images/Sanji.jpg', 
-                fullBody: 'assets/images/csanji.jpg',
-                sound: 'assets/sound/sanji.mp3'
+            3: {
+                profile: 'assets/images/tungtungsahur.webp',
+                fullBody: 'assets/images/tungtung.gif',
+                sound: 'assets/sound/tungtung.mp3'
             }
         };
+
         const bgm = new Audio('assets/sound/backsound.mp3');
         bgm.loop = true;
         bgm.volume = 0.3;
@@ -270,28 +273,34 @@
             document.querySelectorAll(`#${playerType} img`).forEach(img => img.classList.remove('character-selected'));
             const characterImg = document.querySelector(`#${playerType} img[src="${characters[cnum].profile}"]`);
             characterImg.classList.add('character-selected');
+
             if (playerType === 'x') {
                 playerXCharacter = characters[cnum];
-                document.getElementById('playerXCharacterProfile').src = playerXCharacter.fullBody;
+                document.getElementById('playerXCharacterProfile').src = playerXCharacter.profile;
+                if (charAudioX) charAudioX.pause();
+                charAudioX = new Audio(characters[cnum].sound);
+                charAudioX.play().catch(e => console.error("Gagal memainkan suara:", e));
             } else {
                 playerOCharacter = characters[cnum];
-                document.getElementById('playerOCharacterProfile').src = playerOCharacter.fullBody;
+                document.getElementById('playerOCharacterProfile').src = playerOCharacter.profile;
+                if (charAudioY) charAudioY.pause();
+                charAudioY = new Audio(characters[cnum].sound);
+                charAudioY.play().catch(e => console.error("Gagal memainkan suara:", e));
             }
-            const audio = new Audio(characters[cnum].sound);
-            audio.play().catch(e => console.error("Gagal memainkan suara:", e));
+
             if (playerXCharacter && playerOCharacter) {
                 document.getElementById('Home').style.display = 'none';
                 document.getElementById('Board').style.display = 'block';
                 document.getElementById('player').textContent = (player === 0 ? playerXName : playerOName);
+                if (charAudioX) charAudioX.pause();
+                if (charAudioY) charAudioY.pause();
             }
         }
 
         function choose(box_index) {
             const elem = document.getElementById('k' + box_index);
-            if (elem.querySelector('img')) {
-                alert("Already filled");
-                return;
-            }
+            if (elem.querySelector('img')) return;
+
             const img = document.createElement('img');
             if (player === 0) {
                 img.src = playerXCharacter.profile;
@@ -315,9 +324,16 @@
                     boxes[combo[0]] === boxes[combo[1]] &&
                     boxes[combo[0]] === boxes[combo[2]]
                 ) {
-                    const winnerModal = document.getElementById('winner');
                     const winnerName = player === 0 ? playerXName : playerOName;
-                    winnerModal.textContent = `THE WINNER IS ${winnerName}!`;
+                    const winnerCharacter = player === 0 ? playerXCharacter : playerOCharacter;
+
+                    // Tampilkan GIF karakter pemenang
+                    document.getElementById('winnerCharacterImage').src = winnerCharacter.fullBody;
+                    document.getElementById('winner').textContent = `THE WINNER IS ${winnerName}!`;
+
+                    const winnerSound = new Audio(winnerCharacter.sound);
+                    winnerSound.play().catch(e => console.error("Gagal memainkan suara pemenang:", e));
+
                     const modal = new bootstrap.Modal(document.getElementById('exampleModalToggle'));
                     modal.show();
                     return;
@@ -325,8 +341,8 @@
             }
 
             if (draw === 9) {
-                const winnerModal = document.getElementById('winner');
-                winnerModal.textContent = `${playerXName} and ${playerOName} TIED!`;
+                document.getElementById('winner').textContent = `${playerXName} and ${playerOName} TIED!`;
+                document.getElementById('winnerCharacterImage').src = '';
                 const modal = new bootstrap.Modal(document.getElementById('exampleModalToggle'));
                 modal.show();
             } else {
@@ -338,9 +354,7 @@
         function reset() {
             for (let i = 0; i < 9; i++) {
                 const elem = document.getElementById('k' + i);
-                if (elem.querySelector('img')) {
-                    elem.querySelector('img').remove();
-                }
+                if (elem.querySelector('img')) elem.querySelector('img').remove();
                 boxes[i] = '';
             }
             player = 0;
@@ -352,8 +366,8 @@
             const modal = bootstrap.Modal.getInstance(document.getElementById('exampleModalToggle'));
             if (modal) modal.hide();
             reset();
-            playerXCharacter = '';
-            playerOCharacter = '';
+            playerXCharacter = null;
+            playerOCharacter = null;
             document.getElementById('playerXCharacterProfile').src = '';
             document.getElementById('playerOCharacterProfile').src = '';
             document.querySelectorAll('#x img, #y img').forEach(img => img.classList.remove('character-selected'));
